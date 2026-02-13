@@ -14,10 +14,11 @@ Structured logging for Python server applications with Console and Datadog trans
 ## Installation
 
 ```bash
-pip install msw-logger
+# Install from GitHub
+pip install git+https://github.com/stevetfidalgo/msw-logger-python.git
 
-# With Datadog support (optional)
-pip install msw-logger[datadog]
+# Or add to your requirements.txt
+git+https://github.com/stevetfidalgo/msw-logger-python.git
 ```
 
 ## Quick Start
