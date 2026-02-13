@@ -231,6 +231,6 @@ class TestChildLogger:
 
     def test_child_does_not_affect_parent(self):
         logger, transport = _make_logger(LogLevel.INFO)
-        child = logger.child(request_id="req-child")
+        logger.child(request_id="req-child")  # create child; should not affect parent
         logger.info("TEST", "op", "from parent")
         assert transport.logs[0].get("request_id") is None

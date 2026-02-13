@@ -24,6 +24,7 @@ from .utils import (
     should_log,
 )
 from .config import create_default_config, create_transport
+from .logger import Logger
 from .transports import ConsoleTransport, DatadogTransport
 
 __all__ = [
@@ -55,14 +56,12 @@ __all__ = [
 ]
 
 
-def create_logger(config: LoggerConfig | None = None, **kwargs) -> "Logger":
+def create_logger(config: LoggerConfig | None = None, **kwargs) -> Logger:
     """Create a new Logger instance with custom configuration.
 
     Args:
         config: Full LoggerConfig, or pass keyword args.
     """
-    from .logger import Logger
-
     if config is None and kwargs:
         config = LoggerConfig(**kwargs)
     return Logger(config)
@@ -87,4 +86,4 @@ class _LazyLogger:
         return getattr(self._get_instance(), name)
 
 
-logger: "Logger" = _LazyLogger()  # type: ignore[assignment]
+logger: Logger = _LazyLogger()  # type: ignore[assignment]
