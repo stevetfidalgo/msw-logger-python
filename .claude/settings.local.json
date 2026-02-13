@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git init:*)",
+      "Bash(mamba env create:*)",
+      "Bash(~/miniforge3/bin/mamba env create -f environment.yml)",
+      "Bash(~/miniforge3/bin/mamba run -n msw-logger-python pip install -r requirements.txt)",
+      "Bash(direnv allow:*)",
+      "Bash(~/miniforge3/bin/mamba run -n msw-logger-python pytest -v)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}
