@@ -7,6 +7,7 @@ from msw_logger.config import (
     create_default_config,
     create_transport,
     parse_category_levels,
+    parse_log_format,
     parse_log_level,
 )
 from msw_logger.types import LogLevel
@@ -69,6 +70,26 @@ class TestParseCategoryLevels:
         assert result == {"DATABASE": LogLevel.DEBUG, "AUTH": LogLevel.TRACE}
 
 
+class TestParseLogFormat:
+    def test_default_to_pretty_when_none(self):
+        assert parse_log_format(None) == "pretty"
+
+    def test_parse_pretty(self):
+        assert parse_log_format("pretty") == "pretty"
+
+    def test_parse_json(self):
+        assert parse_log_format("json") == "json"
+
+    def test_case_insensitive(self):
+        assert parse_log_format("JSON") == "json"
+
+    def test_mixed_case(self):
+        assert parse_log_format("Pretty") == "pretty"
+
+    def test_invalid_defaults_to_pretty(self):
+        assert parse_log_format("xml") == "pretty"
+
+
 class TestCreateDefaultConfig:
     def test_defaults_when_no_env_vars(self):
         with patch.dict(os.environ, {}, clear=True):
@@ -96,14 +117,19 @@ class TestCreateDefaultConfig:
         }
 
     def test_reads_transport_console(self):
-        with patch.dict(os.environ, {"LOG_TRANSPORT": "console"}, clear=True):
+        with patch.dict(os.environ, {"LOG_TRANSPORT_SERVER": "console"}, clear=True):
             config = create_default_config()
         assert config.transports[0].name == "console"
 
     def test_defaults_to_console_for_invalid_transport(self):
-        with patch.dict(os.environ, {"LOG_TRANSPORT": "invalid"}, clear=True):
+        with patch.dict(os.environ, {"LOG_TRANSPORT_SERVER": "invalid"}, clear=True):
             config = create_default_config()
         assert config.transports[0].name == "console"
+
+    def test_reads_log_format(self):
+        with patch.dict(os.environ, {"LOG_FORMAT_SERVER": "json"}, clear=True):
+            config = create_default_config()
+        assert config.format == "json"
 
 
 class TestCreateTransport:

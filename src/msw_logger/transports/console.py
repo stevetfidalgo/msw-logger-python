@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from ..utils import safe_stringify
 
 if TYPE_CHECKING:
-    from ..types import StructuredLog
+    from ..types import LogFormat, StructuredLog
 
 # ANSI color codes
 _RESET = "\x1b[0m"
@@ -38,19 +38,20 @@ class ConsoleTransport:
 
     name = "console"
 
-    def __init__(self) -> None:
+    def __init__(self, format: LogFormat = "pretty") -> None:
+        self._format = format
         self._use_colors = sys.stdout.isatty()
 
     def log(self, entry: StructuredLog) -> None:
         level = entry.get("level", "INFO")
-        output = self._format(entry)
+        output = self._format_pretty(entry)
 
         if level in ("WARN", "ERROR"):
             print(output, file=sys.stderr, end="")
         else:
             print(output, file=sys.stdout, end="")
 
-    def _format(self, entry: StructuredLog) -> str:
+    def _format_pretty(self, entry: StructuredLog) -> str:
         timestamp = entry.get("timestamp", "")
         level = entry.get("level", "INFO")
         category = entry.get("category", "")
