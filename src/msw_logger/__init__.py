@@ -10,6 +10,7 @@ from .types import (
     DatadogConfig,
     ErrorDetails,
     LogCat,
+    LogFormat,
     LoggerConfig,
     LogLevel,
     LogTransport,
@@ -23,7 +24,7 @@ from .utils import (
     sanitize_data,
     should_log,
 )
-from .config import create_default_config, create_transport
+from .config import create_default_config, create_transport, parse_log_format
 from .logger import Logger
 from .transports import ConsoleTransport, DatadogTransport
 
@@ -34,6 +35,7 @@ __all__ = [
     "Logger",
     # Types
     "LogLevel",
+    "LogFormat",
     "LogCat",
     "StructuredLog",
     "ErrorDetails",
@@ -46,6 +48,7 @@ __all__ = [
     # Config
     "create_default_config",
     "create_transport",
+    "parse_log_format",
     # Utils
     "generate_request_id",
     "safe_stringify",

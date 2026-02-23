@@ -68,12 +68,15 @@ logger.error(category, operation, message, data_or_error=None)
 ```bash
 # General Logging Configuration
 LOG_LEVEL=INFO                          # TRACE, DEBUG, INFO, WARN, ERROR
-LOG_TRANSPORT=console                   # console, datadog
+LOG_TRANSPORT_SERVER=console            # console, datadog
+
+# Server-side log format (console transport only)
+# LOG_FORMAT_SERVER=pretty              # pretty (default), json
 
 # Category-Specific Log Levels (optional)
 LOG_CATEGORY_LEVELS=DATABASE:DEBUG,AUTH:TRACE,HTTP:WARN
 
-# Datadog Configuration (if LOG_TRANSPORT=datadog)
+# Datadog Configuration (if LOG_TRANSPORT_SERVER=datadog)
 DATADOG_API_KEY=your_api_key_here
 DATADOG_SERVICE_NAME=my-app
 DATADOG_ENV=development
