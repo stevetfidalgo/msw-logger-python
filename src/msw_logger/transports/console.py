@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import sys
 from typing import TYPE_CHECKING
 
@@ -31,9 +32,10 @@ _LEVEL_COLORS = {
 
 
 class ConsoleTransport:
-    """Console transport for pretty-printed log output.
+    """Console transport for pretty-printed or JSON log output.
 
     Detects TTY and uses ANSI colors when available, plain text otherwise.
+    In JSON mode, outputs single-line JSON to stdout for log collectors.
     """
 
     name = "console"
@@ -43,6 +45,10 @@ class ConsoleTransport:
         self._use_colors = sys.stdout.isatty()
 
     def log(self, entry: StructuredLog) -> None:
+        if self._format == "json":
+            print(json.dumps(entry))
+            return
+
         level = entry.get("level", "INFO")
         output = self._format_pretty(entry)
 

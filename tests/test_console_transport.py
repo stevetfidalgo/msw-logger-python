@@ -1,5 +1,6 @@
 """Tests for ConsoleTransport."""
 
+import json
 from io import StringIO
 from unittest.mock import patch
 
@@ -106,3 +107,57 @@ class TestLogOutputContent:
         output = mock_err.getvalue()
         assert "ValueError" in output
         assert "bad value" in output
+
+
+class TestJsonFormat:
+    def test_json_outputs_valid_json(self):
+        transport = ConsoleTransport(format="json")
+        log = _make_log("INFO")
+        with patch("sys.stdout", new_callable=StringIO) as mock_out:
+            transport.log(log)
+        output = mock_out.getvalue().strip()
+        parsed = json.loads(output)
+        assert parsed["level"] == "INFO"
+        assert parsed["message"] == "Test message"
+
+    def test_json_is_single_line(self):
+        transport = ConsoleTransport(format="json")
+        log = _make_log("INFO", data={"key": "value"})
+        with patch("sys.stdout", new_callable=StringIO) as mock_out:
+            transport.log(log)
+        output = mock_out.getvalue()
+        # Should be exactly one line (content + newline from print)
+        assert output.count("\n") == 1
+
+    def test_json_includes_all_fields(self):
+        transport = ConsoleTransport(format="json")
+        log = _make_log("INFO", request_id="req-123", data={"key": "value"})
+        with patch("sys.stdout", new_callable=StringIO) as mock_out:
+            transport.log(log)
+        parsed = json.loads(mock_out.getvalue())
+        assert parsed["timestamp"] == "2025-01-15T10:30:00.000Z"
+        assert parsed["level"] == "INFO"
+        assert parsed["category"] == "TEST"
+        assert parsed["operation"] == "test-operation"
+        assert parsed["message"] == "Test message"
+        assert parsed["environment"] == "server"
+        assert parsed["request_id"] == "req-123"
+        assert parsed["data"] == {"key": "value"}
+
+    def test_json_routes_all_levels_to_stdout(self):
+        """JSON mode always uses stdout (for log collectors), even for WARN/ERROR."""
+        for level in ("TRACE", "DEBUG", "INFO", "WARN", "ERROR"):
+            transport = ConsoleTransport(format="json")
+            with patch("sys.stdout", new_callable=StringIO) as mock_out, \
+                 patch("sys.stderr", new_callable=StringIO) as mock_err:
+                transport.log(_make_log(level))
+            assert mock_out.getvalue(), f"{level} should write to stdout"
+            assert not mock_err.getvalue(), f"{level} should NOT write to stderr"
+
+    def test_pretty_format_unchanged(self):
+        """Explicit pretty format behaves like default."""
+        transport = ConsoleTransport(format="pretty")
+        with patch("sys.stdout", new_callable=StringIO) as mock_out:
+            transport.log(_make_log("INFO"))
+        output = mock_out.getvalue()
+        assert "Message:" in output  # Pretty format has labels
