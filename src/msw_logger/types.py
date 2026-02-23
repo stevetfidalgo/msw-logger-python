@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import enum
 from dataclasses import dataclass, field
-from typing import Any, Protocol, TypedDict, runtime_checkable
+from typing import Any, Literal, Protocol, TypedDict, runtime_checkable
 
 
 class LogLevel(enum.IntEnum):
@@ -15,6 +15,9 @@ class LogLevel(enum.IntEnum):
     INFO = 2
     WARN = 3
     ERROR = 4
+
+
+LogFormat = Literal["pretty", "json"]
 
 
 class LogCat:
@@ -107,6 +110,7 @@ class LoggerConfig:
     level: LogLevel = LogLevel.INFO
     transports: list[Any] = field(default_factory=list)
     category_levels: dict[str, LogLevel] | None = None
+    format: LogFormat = "pretty"
     default_request_id: str | None = None
     default_connection_id: str | None = None
     default_module: str | None = None
